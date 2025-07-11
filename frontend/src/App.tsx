@@ -1,22 +1,20 @@
-import { useState, useEffect } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 
 function App() {
-  const [backendMessage, setBackendMessage] = useState<string>('Loading...')
-
-  useEffect(() => {
-    fetch('http://localhost:5000/')
-      .then((res) => res.json())
-      .then((data: { message: string }) => setBackendMessage(data.message))
-      .catch(() => setBackendMessage('Error connecting to backend'))
-  }, [])
+  const token = localStorage.getItem('token');
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
-      <h1>📝 Note Summarizer</h1>
-      <p>Frontend is working!</p>
-      <p><strong>Backend:</strong> {backendMessage}</p>
-    </div>
-  )
+    <Routes>
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
+      <Route path="*" element={<Navigate to="/login" />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
+
