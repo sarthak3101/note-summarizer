@@ -22,7 +22,7 @@ export default function Login() {
 
     const data = await res.json();
     if (res.ok) {
-      localStorage.setItem('token', data.access_token);
+      localStorage.setItem('access_token', data.access_token);
       navigate('/dashboard');
     } else {
       setError(data.error || 'Login failed');
