@@ -6,48 +6,36 @@ export default function Summarizer() {
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  type SummaryResponse = {
+  summary: string;
+};
 
-  const handleSummarize = async () => {
-    setLoading(true);
-    setError("");
-    setSummary("");
+const handleSummarize = async () => {
+  setLoading(true);
+  setError("");
+  setSummary("");
 
+  try {
     const token = localStorage.getItem("access_token");
+    const res = await axios.post<SummaryResponse>(
+      "http://localhost:5000/summarize",
+      { text },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("Response:", res.data);
+    setSummary(res.data.summary);
+  } catch (err: any) {
+    setError(err.response?.data?.error || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
-    if (!token) {
-      setError("No access token found. Please login again.");
-      setLoading(false);
-      return;
-    }
-
-    if (!text.trim()) {
-      setError("Please enter some text to summarize.");
-      setLoading(false);
-      return;
-    }
-
-    console.log("Sending text:", text);
-
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/summarize",
-        { text },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log("Response:", res.data);
-      setSummary(res.data.summary);
-    } catch (err: any) {
-      console.error("Error response:", err.response);
-      setError(err.response?.data?.error || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="max-w-3xl mx-auto mt-12 p-6 border rounded-xl shadow">
